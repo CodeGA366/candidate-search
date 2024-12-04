@@ -76,20 +76,22 @@ const CandidateSearch = () => {
   }
 
   return (
-    <div>
+    <main>
       {currentCandidate && (
-        <div>
-          <h2>{currentCandidate.name || 'no name provided'}</h2>
-          <p>UserName: {currentCandidate.username}</p>
-          <p>Location: {currentCandidate.location || 'not provided'}</p>
+        <div className='candidate-card'>
           <img src={currentCandidate.avatar_url} alt={`${currentCandidate.name}'s avatar`} />
+          <h2>{currentCandidate.name || 'no name provided'}</h2>
+          <p>Username: {currentCandidate.username}</p>
+          <p>Location: {currentCandidate.location || 'not rovided'}</p>
           <p>Email: {currentCandidate.email}</p>
           <p>Company: {currentCandidate.company}</p>
-          <button onClick={handleSaveCandidate}>+</button>
-          <button onClick={nextCandidate}>-</button>
+          <div className='button-container'>
+            <button onClick={handleSaveCandidate}>+</button>
+            <button onClick={nextCandidate}>-</button>
+          </div>
         </div>
-      )}
-    </div>
+        )}
+    </main>
   );
 };
 

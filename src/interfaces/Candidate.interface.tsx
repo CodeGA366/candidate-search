@@ -5,7 +5,7 @@ export interface Candidate {
     avatar_url: string;
     location: string;
     name?: string;
-    email?: string;
+    email: string;
     company?: string;
     bio?: string;
     isRejected?: boolean;
