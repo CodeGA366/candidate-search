@@ -1,12 +1,13 @@
 const searchGithub = async () => {
   try {
     const start = Math.floor(Math.random() * 100000000) + 1;
-    // console.log(import.meta.env);
+    console.log('Using token:', import.meta.env.VITE_GITHUB_TOKEN);
+    console.log('Environment Variables:', import.meta.env);
     const response = await fetch(
       `https://api.github.com/users?since=${start}`,
       {
         headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+          Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
         },
       }
     );
@@ -25,9 +26,12 @@ const searchGithub = async () => {
 
 const searchGithubUser = async (username: string) => {
   try {
+    console.log('Using token:', import.meta.env.VITE_GITHUB_TOKEN);
+    console.log('Environment Variables:', import.meta.env);
+    console.log('fetching user:', username);
     const response = await fetch(`https://api.github.com/users/${username}`, {
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+        Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
       },
     });
     const data = await response.json();
