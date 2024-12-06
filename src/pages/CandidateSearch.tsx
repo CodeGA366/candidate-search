@@ -8,7 +8,7 @@ const CandidateSearch = () => {
   //variables
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [SavedCandidates, setSavedCandidates] = useState<Candidate[]>([]);
+
   const [loading, setLoading] = useState(false);
 
   //useEffect
@@ -23,10 +23,11 @@ const CandidateSearch = () => {
         const mappedCandidates = candidateList.map((user: any) => ({
           username: user.login,
           avatar_url: user.avatar_url,
-          location: user.location || undefined,
-          name: user.name || undefined,
-          email: user.email || undefined,
-          company: user.company || undefined,
+          location: user.location || 'Location not provided',
+          name: user.name || user.login || 'Name not provided',
+          email: user.email || 'Public email not provided',
+          company: user.company || 'Company not provided',
+          html_url: user.html_url,
         }));
 
         console.log('Mapped candidates:', mappedCandidates);
@@ -34,7 +35,9 @@ const CandidateSearch = () => {
 
         if (mappedCandidates.length > 0) {
           const userDetails = await searchGithubUser(mappedCandidates[0].username); //fetching user details from the API
-          setCandidates([userDetails]);//set first candidates details
+          const updatedCandidates = [...mappedCandidates];
+          updatedCandidates[0] = userDetails;
+          setCandidates(updatedCandidates);
           setCurrentIndex(0);
         }
       } catch (error) {
@@ -48,11 +51,18 @@ const CandidateSearch = () => {
   
   const handleSaveCandidate = () => {
     if (candidates[currentIndex]) {
-      setSavedCandidates([...SavedCandidates, candidates[currentIndex]]);
-      localStorage.setItem('savedCandidates', JSON.stringify([...SavedCandidates, candidates[currentIndex]]));
+      //retrieve existing saved candidates from local storage
+      const existingSavedCandidates: Candidate[] = JSON.parse(localStorage.getItem('savedCandidates') || '[]');
+
+      //save the current candidate
+      const updatedSavedCandidates: Candidate[] = [...existingSavedCandidates, candidates[currentIndex]];
+      
+      //update local storage with new list of saved candidates
+      localStorage.setItem('savedCandidates', JSON.stringify(updatedSavedCandidates));
       nextCandidate();
     }
   };
+  
 
   const nextCandidate = async () => {
     const nextIndex = currentIndex + 1;
@@ -64,6 +74,8 @@ const CandidateSearch = () => {
         return updatedCandidates;
       });
       setCurrentIndex(nextIndex);
+    } else {
+      console.log('No more candidates to show');
     }
   };
 
@@ -76,7 +88,8 @@ const CandidateSearch = () => {
   }
 
   return (
-    <main>
+    <main className='candidate-container'>
+      <h1>Candidate Search</h1>
       {currentCandidate && (
         <div className='candidate-card'>
           <img src={currentCandidate.avatar_url} alt={`${currentCandidate.name}'s avatar`} />
@@ -85,9 +98,10 @@ const CandidateSearch = () => {
           <p>Location: {currentCandidate.location || 'not rovided'}</p>
           <p>Email: {currentCandidate.email}</p>
           <p>Company: {currentCandidate.company}</p>
+          <p>Github: {currentCandidate.html_url}</p>
           <div className='button-container'>
-            <button onClick={handleSaveCandidate}>+</button>
-            <button onClick={nextCandidate}>-</button>
+            <button className='save-button' onClick={handleSaveCandidate}>+</button>
+            <button className='reject-button' onClick={nextCandidate}>-</button>
           </div>
         </div>
         )}

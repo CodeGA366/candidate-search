@@ -1,3 +1,4 @@
+import { Candidate } from '../interfaces/Candidate.interface';
 const searchGithub = async () => {
   try {
     const start = Math.floor(Math.random() * 100000000) + 1;
@@ -24,7 +25,7 @@ const searchGithub = async () => {
   }
 };
 
-const searchGithubUser = async (username: string) => {
+const searchGithubUser = async (username: string): Promise<Candidate> => {
   try {
     console.log('Using token:', import.meta.env.VITE_GITHUB_TOKEN);
     console.log('Environment Variables:', import.meta.env);
@@ -38,10 +39,26 @@ const searchGithubUser = async (username: string) => {
     if (!response.ok) {
       throw new Error('invalid API response, check the network tab');
     }
-    return data;
+    return {
+      username: data.login,
+      avatar_url: data.avatar_url,
+      html_url: data.html_url,
+      name: data.name || 'Name not provided',
+      company: data.company || 'Company not provided',
+      location: data.location || 'Location not provided',
+      email: data.email || 'Public email not provided',
+    } as Candidate;
   } catch (err) {
-    // console.log('an error occurred', err);
-    return {};
+    console.log('an error occurred', err);
+    return {
+      username: 'unknown',
+      avatar_url: '',
+      html_url: '',
+      name: 'Name not provided',
+      company: 'Company not provided',
+      location: 'Location not provided',
+      email: 'Public email not provided',
+    };
   }
 };
 
